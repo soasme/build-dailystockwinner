@@ -3,7 +3,7 @@ name: Update Site Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 21 * * 1-5'  # Run at 16:00 EST (21:00 UTC) Monday-Friday
+    - cron: '0 21 * * 1-5'  # Run at 16:00 EST (21:00 UTC) Monday-Friday. Note: During EDT (daylight saving), this runs at 17:00 EDT
 
 jobs:
   update-data:
