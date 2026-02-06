@@ -1,0 +1,53 @@
+name: Update Site Data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 21 * * 1-5'  # Run at 16:00 EST (21:00 UTC) Monday-Friday. Note: During EDT (daylight saving), this runs at 17:00 EDT
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout dailystockwinner repository
+        uses: actions/checkout@v4
+        with:
+          repository: inkylabs-dev/dailystockwinner
+          token: ${{ secrets.GH_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+          
+      - name: Install dependencies
+        run: pnpm i
+        
+      - name: Build data
+        run: pnpm build:data
+        
+      - name: Check for changes
+        id: git-check
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Commit and push if changed
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: update site data"
+          git push
