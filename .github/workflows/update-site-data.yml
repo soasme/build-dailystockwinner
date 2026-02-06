@@ -48,8 +48,8 @@ jobs:
       - name: Commit and push if changed
         if: steps.git-check.outputs.changed == 'true'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "InkyLabs Limited"
+          git config user.email "inkylabslimited@gmail.com"
           git add .
           git commit -m "chore: update site data"
           git push
